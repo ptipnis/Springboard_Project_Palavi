@@ -1,0 +1,37 @@
+## 1. Examine/plot the data before fitting the model
+states.model <- subset(states, select = c("metro", "energy"))
+summary(states.model)
+plot(states.model)
+cor(states.model, use="pairwise")
+
+## 2. Print and interpret the model 
+int.model <- lm(energy ~ metro, data = states)
+summary(int.model)
+
+## 3. Plot the model to look for deviations 
+
+plot(int.model)
+
+##   Select one or more additional predictors to add to your model and
+##   repeat steps 1-3. Is this model significantly better than the model
+##   with /metro/ as the only predictor?
+
+states.model.pop.waste <- subset(states, select = c("energy", "metro", "pop", "waste"))
+summary(states.model.pop.waste)
+plot(states.model.pop.waste)
+cor(states.model.pop.waste, use = "pairwise")
+mod.model.pop.waste <- lm(energy ~ metro + pop + waste, data = states)
+summary(mod.model.pop.waste)
+anova(int.model, mod.model.pop.waste)
+
+Use the states data set.
+
+##   1. Add on to the regression equation that you created in exercise 1 by
+##      generating an interaction term and testing the interaction.
+
+model.metro.by.waste <- lm(energy ~ metro * waste, data = states)
+
+##   2. Try adding region to the model. Are there significant differences across the four regions?
+
+model.region <- lm(energy ~ metro * waste + region, data = states)
+anova(model.region)
