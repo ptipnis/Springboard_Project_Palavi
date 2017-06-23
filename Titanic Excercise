@@ -1,0 +1,41 @@
+#Save the data set as a CSV file called titanic_original.csv and load it in RStudio into a data frame.
+MyData <- read.csv(file="titanic3.csv", header=TRUE, sep=",")
+MyData
+write.csv(MyData, file = "C:\\Users\\Palavi\\Documents\\titanic_original.csv",row.names=FALSE)
+
+# Port of embarkation
+# The embarked column has some missing values. Find the missing values and replace them with S. 
+MyData$embarked[which(MyData$embarked=="")] <- "S"
+MyData
+
+#Calculate the mean of the Age column and use that value to populate the missing values
+#Think about other ways you could have populated the missing values in the age column.
+#calculating the mean age
+mean_age <- mean(MyData$age, na.rm = TRUE)
+
+# replacing NA values with mean age
+MyData$age[is.na(MyData$age)] <- mean_age
+
+#Looking at the dataset we could use Pclass and SibSp to calculate the missing ages. 
+#Though when I covered linear regression section I got back to this question modify to state
+#that we can use linear regression models
+# to explore  Pclass and SibSp to check if they are potential Age predictors
+
+
+#Filling empty lifeboat values with NA.
+MyData$boat <- sub("^$", "NA", MyData$boat)
+str(MyData)
+
+#Missing cabins don't neccisarily need a value.  They can get a dummy value such as NA.  A missing value likely means that no one survived to report the cabin number, or the passengar was in third class.  It seems that most third class passengars did not have a cabin. 
+
+MyData$has_cabin_number <- "1"
+MyData$has_cabin_number[which(MyData$cabin=="")] <- "0"
+
+# Did everyone who had a cabin survive?
+MyData$has_cabin_number == MyData$survived 
+# It appears that not all people with cabin numbers did survive. 
+#On a closer inspection of the data it appears that most cabin numbers were reported if the passenger had a family member survive. 
+MyData$has_cabin_number == MyData$survived | MyData$sibsp >= 1 | MyData$parch >= 1
+
+#Titanic_clean.csv file 
+write.csv(MyData, file = "C:\\Users\\Palavi\\Documents\\titanic_clean.csv",row.names=FALSE)
